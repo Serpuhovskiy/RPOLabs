@@ -36,33 +36,35 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         log)
 
+add_library(spdlog STATIC IMPORTED)
+set_target_properties(spdlog PROPERTIES IMPORTED_LOCATION
+        G:/libs/spdlog/build/${ANDROID_ABI}/libspdlog.a)
+#        /Users/joe/Projects/rpo/libs/spdlog/build/${ANDROID_ABI}/libspdlog.a)
+#G:\libs\spdlog\build\x86
+#target_include_directories(native-lib PUBLIC
+target_include_directories(fclient PUBLIC
+        G:/libs/spdlog/spdlog/include
+        G:/libs/mbedtls/mbedtls/include)
+#/Users/joe/Projects/rpo/libs/spdlog/spdlog/include)
+
+
+add_library(mbedcrypto SHARED IMPORTED)
+set_target_properties(mbedcrypto PROPERTIES IMPORTED_LOCATION
+        G:/libs/mbedtls/build/${ANDROID_ABI}/library/libmbedcrypto.so)
+#        G:\libs\mbedtls\build\x86\library
+
+
+
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
         fclient
+        spdlog
+        mbedcrypto
 
         # Links the target library to the log library
         # included in the NDK.
-        ${log-lib})
-
-# Присоединение библиотеки spdlog
-add_library(spdlog STATIC IMPORTED)
-set_target_properties(spdlog PROPERTIES IMPORTED_LOCATION
-        /home/artem/working/fclient/libs/spdlog/build/${ANDROID_ABI}/libspdlog.a)
-
-
-# Присоединение библиотеки mbedtls
-add_library(mbedcrypto SHARED IMPORTED)
-set_target_properties(mbedcrypto PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_CURRENT_SOURCE_DIR}/../nativeLibs/${ANDROID_ABI}/libmbedcrypto.so)
-
-target_include_directories(fclient PUBLIC
-        /home/artem/working/fclient/libs/spdlog/spdlog/include
-        /home/artem/working/fclient/libs/mbedtls/mbedtls/include)
-target_link_libraries(
-        fclient
-        spdlog
-        mbedcrypto
-)
+        ${log-lib}
+        )
