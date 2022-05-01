@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { login, logout } from '../services/BackendService';
 import { saveUser, removeUser, getToken, getUserName, getUser } from '../utils/utils';
 import {useNavigate} from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { userActions } from '../redux/actionCreators';
+
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+//   const [errorMessage, setErrorMessage] = useState('');
 
   const nav = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,16 +25,17 @@ function Login() {
       .then((resp) => {
         console.log(resp.data);
         saveUser(resp.data);
+        dispatch(userActions.login(resp.data))
         nav('/home');
       })
       .catch((err) => {
-        if (err.response && err.response.status === 401) {
-          setErrorMessage('Ошибка авторизации');
-          setLoggingIn(false);
-        } else {
-          setErrorMessage(err.message);
-          setLoggingIn(false);
-        }
+        // if (err.response && err.response.status === 401) {
+        // //   setErrorMessage('Ошибка авторизации');
+        //   setLoggingIn(false);
+        // } else {
+        // //   setErrorMessage(err.message);
+        //   setLoggingIn(false);
+        // }
       })
 
       .finally(() => setLoggingIn(false));
@@ -46,7 +51,7 @@ function Login() {
   return (
     <div className="col-md-6 me-0">
       <h2>Вход</h2>
-      {errorMessage && <div className="alert alert-danger mt-1 me-0 ms-0">{errorMessage}</div>}
+      {/* {errorMessage && <div className="alert alert-danger mt-1 me-0 ms-0">{errorMessage}</div>} */}
 
       <form name="form" onSubmit={(e) => handleSubmit(e)}>
         <div className="form-group">

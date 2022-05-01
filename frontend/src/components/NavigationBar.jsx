@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { saveUser, removeUser, getToken, getUserName, getUser } from '../utils/utils';
-import { login, logout } from '../services/BackendService';
+import { getUserName, getUser } from '../utils/utils';
+import { logout } from '../services/BackendService';
+import { useDispatch } from 'react-redux';
+import { userActions } from '../redux/actionCreators';
 
 function NavigationBar() {
   const navigate = useNavigate();
 
   const goHome = () => {
+    console.log('GOHOME');
     navigate('/home');
   };
 
-  // const initialUserName = getUserName();
-  // const [userName, setUserName] = useState(initialUserName);
-
   const userName = getUserName();
+  const user = getUser();
+  const dispatch = useDispatch();
   return (
     <Navbar bg="light" expand="lg">
       <Navbar.Brand>
@@ -29,19 +31,14 @@ function NavigationBar() {
             Home
           </Nav.Link>
           <Nav.Link onClick={() => goHome()}>Link</Nav.Link>
-          {/* <Nav.Link as={Link} to="/login">
-            Login
-          </Nav.Link> */}
         </Nav>
         <Navbar.Text>{userName}</Navbar.Text>
         {userName && (
           <Nav.Link
             onClick={() => {
               logout().then(() => {
-                removeUser();
-                // userName = '';
-                // setUserName('');
-                goHome();
+                dispatch(userActions.logout());
+                navigate('/login');
               });
             }}>
             <FontAwesomeIcon icon={faUser} fixedWidth />
