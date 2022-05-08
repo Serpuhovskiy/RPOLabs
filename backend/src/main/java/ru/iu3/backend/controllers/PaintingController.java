@@ -1,6 +1,9 @@
 package ru.iu3.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,21 +15,20 @@ import ru.iu3.backend.models.Painting;
 import ru.iu3.backend.repositories.MuseumRepository;
 import ru.iu3.backend.repositories.PaintingRepository;
 
+import javax.validation.Valid;
 import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("api/v1")
 public class PaintingController {
-    // По аналогии у нас будет два репозитория
     @Autowired
     PaintingRepository paintingRepository;
 
-    @Autowired
-    MuseumRepository museumRepository;
+
 
     @GetMapping("/paintings")
-    public List getAllPaintings() {
-        return paintingRepository.findAll();
+    public Page<Painting> getAllPaintings(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+        return paintingRepository.findAll(PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "name")));
     }
 
 
@@ -75,18 +77,9 @@ public class PaintingController {
         }
     }
 
-    @DeleteMapping("/paintings/{id}")
-    public ResponseEntity<Object> deletePainting(@PathVariable(value = "id") Long paintingID) {
-        Optional<Painting> cc = paintingRepository.findById(paintingID);
-        Map<String, Boolean> resp = new HashMap<>();
-
-        if (cc.isPresent()) {
-            paintingRepository.delete(cc.get());
-            resp.put("deleted", Boolean.TRUE);
-        } else {
-            resp.put("deleted", Boolean.FALSE);
-        }
-
-        return ResponseEntity.ok(resp);
+    @PostMapping("/deletepaintings")
+    public ResponseEntity<List<Painting>> deletePaintings(@Valid @RequestBody List<Painting> paintings) {
+        paintingRepository.deleteAll(paintings);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

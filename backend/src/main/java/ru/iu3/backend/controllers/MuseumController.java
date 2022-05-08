@@ -1,15 +1,20 @@
 package ru.iu3.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import ru.iu3.backend.models.Country;
 import ru.iu3.backend.models.Museum;
 import ru.iu3.backend.models.Painting;
 import ru.iu3.backend.repositories.MuseumRepository;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,8 +26,11 @@ public class MuseumController {
     MuseumRepository museumRepository;
 
     @GetMapping("/museums")
-    public List getAllCountries() {
-        return museumRepository.findAll();
+//    public List getAllMuseums() {
+//        return museumRepository.findAll();
+//    }
+    public Page<Museum> getAllMuseums(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+        return museumRepository.findAll(PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "name")));
     }
 
 
@@ -61,7 +69,7 @@ public class MuseumController {
 
 
     @PutMapping("/museums/{id}")
-    public ResponseEntity<Museum> updateCountry(@PathVariable(value = "id") Long museumID,
+    public ResponseEntity<Museum> updateMuseum(@PathVariable(value = "id") Long museumID,
                                                 @RequestBody Museum museumDetails) {
         Museum museum = null;
         Optional<Museum> cc = museumRepository.findById(museumID);
@@ -81,19 +89,25 @@ public class MuseumController {
     }
 
 
-    @DeleteMapping("/museums/{id}")
-    public ResponseEntity<Object> deleteCountry(@PathVariable(value = "id") Long museumID) {
-        Optional<Museum> museum = museumRepository.findById(museumID);
-        Map<String, Boolean> resp = new HashMap<>();
+//    @DeleteMapping("/museums/{id}")
+//    public ResponseEntity<Object> deleteMuseum(@PathVariable(value = "id") Long museumID) {
+//        Optional<Museum> museum = museumRepository.findById(museumID);
+//        Map<String, Boolean> resp = new HashMap<>();
+//
+//        // Возвратит true, если объект существует (не пустой)
+//        if (museum.isPresent()) {
+//            museumRepository.delete(museum.get());
+//            resp.put("deleted", Boolean.TRUE);
+//        } else {
+//            resp.put("deleted", Boolean.FALSE);
+//        }
+//
+//        return ResponseEntity.ok(resp);
+//    }
 
-        // Возвратит true, если объект существует (не пустой)
-        if (museum.isPresent()) {
-            museumRepository.delete(museum.get());
-            resp.put("deleted", Boolean.TRUE);
-        } else {
-            resp.put("deleted", Boolean.FALSE);
-        }
-
-        return ResponseEntity.ok(resp);
+    @PostMapping("/deletemuseums")
+    public ResponseEntity<List<Museum>> deleteMuseums(@Valid @RequestBody List<Museum> museums) {
+        museumRepository.deleteAll(museums);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
