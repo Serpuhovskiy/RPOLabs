@@ -1,14 +1,14 @@
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faHome, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { getUserName, getUser } from '../utils/utils';
 import { logout } from '../services/BackendService';
 import { useDispatch } from 'react-redux';
 import { userActions } from '../redux/actionCreators';
 
-function NavigationBar() {
+function NavigationBar({toggleSideBar}) {
   const navigate = useNavigate();
 
   const goHome = () => {
@@ -21,9 +21,13 @@ function NavigationBar() {
   const dispatch = useDispatch();
   return (
     <Navbar bg="light" expand="lg">
-      <Navbar.Brand>
-        <FontAwesomeIcon icon={faHome} /> My RPO
-      </Navbar.Brand>
+      <button
+        type="button"
+        className="btn btn-outline-secondary mr-2"
+        onClick={toggleSideBar}>
+        <FontAwesomeIcon icon={faBars} />
+      </button>
+      <Navbar.Brand>My RPO</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">

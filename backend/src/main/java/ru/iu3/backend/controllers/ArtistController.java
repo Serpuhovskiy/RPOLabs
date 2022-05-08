@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1")
 public class ArtistController {
@@ -42,6 +42,7 @@ public class ArtistController {
         }
         catch(Exception ex) {
             String error;
+            System.out.println(ex.getMessage());
             if (ex.getMessage().contains("artists.name_UNIQUE"))
                 error = "artistalreadyexists";
             else
